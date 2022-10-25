@@ -1,0 +1,19 @@
+{
+  "name": "cypress-insta",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "open": "cypress open",
+    "info": "cypress info",
+    "chrome": "cypress run --browser chrome",
+    "chromium": "cypress run --browser chromium",
+    "firefox": "cypress run --browser firefox",
+    "parallel": "cypress run --record --parallel"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^10.10.0"
+  }
+}
