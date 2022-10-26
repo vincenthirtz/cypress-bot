@@ -48,6 +48,16 @@ Cypress.Commands.add("godiscover", (waiting) => {
   cy.wait(waiting);
 });
 
+Cypress.Commands.add("waitrandom", (waiting) => {
+    const time = Math.floor(Math.random() * 10000) + 1;
+    cy.wait(time);
+});
+
+Cypress.Commands.add("scrollrandom", (waiting) => {
+    const y = Math.floor(Math.random() * 10000) + 1;
+    cy.scrollTo(0, y);
+});
+
 Cypress.Commands.add("launchliking", () => {
     cy.godiscover(5000);
     cy.likeimg(5000);
