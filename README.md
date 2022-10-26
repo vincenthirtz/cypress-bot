@@ -7,6 +7,8 @@
 ## Table of Contents
 
 - [Installation](#installation)
+- [Goals](#goals)
+- [Troubleshoot](#troubleshoot)
 
 ## Installation
 
