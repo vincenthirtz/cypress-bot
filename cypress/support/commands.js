@@ -25,60 +25,80 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 Cypress.Commands.add("likeimg", (waiting) => {
+  let shouldStop = false;
   cy.get("main")
     .find("img")
-    .then(($els) => {
-      cy.wait(waiting);
-      cy.wrap($els).click({ multiple: true, force: true });
-      cy.wait(waiting);
-      cy.get(`svg[aria-label="J’aime"]`).click({
-        multiple: true,
-        force: true,
+    .each(($img, k) => {
+      cy.then(() => {
+        if (shouldStop) {
+          return;
+        }
+        console.log("img", k);
+        cy.wrap($img)
+          .click({ force: true })
+          .then((n) => {
+            cy.waitrandom();
+            if (n === 10) {
+              shouldStop = true;
+            }
+            cy.get(`svg[aria-label="J’aime"]`).click({
+              multiple: true,
+              force: true,
+            });
+            cy.waitrandom();
+          });
       });
-      cy.log($els);
-    });
+    })
+    // cy.each yields the original subject
+    // even if you stop the iteration early
+    .should("have.length", 21);
 });
 
-Cypress.Commands.add("godiscover", (waiting) => {
-    const env = Cypress.env();
-  cy.wait(waiting);
-  cy.get(`svg[aria-label="Découvrir"]`).click({
+Cypress.Commands.add("godiscover", () => {
+  cy.waitrandom();
+  cy.get(`svg[aria-label="Découvrir"]`).should("be.visible").click({
     force: true,
   });
-  cy.wait(waiting);
+  cy.waitrandom();
 });
 
-Cypress.Commands.add("waitrandom", (waiting) => {
-    const time = Math.floor(Math.random() * 10000) + 1;
-    cy.wait(time);
+Cypress.Commands.add("waitrandom", () => {
+  const time = Math.floor(Math.random() * 10000) + 1;
+  cy.wait(time);
 });
 
-Cypress.Commands.add("scrollrandom", (waiting) => {
-    const y = Math.floor(Math.random() * 10000) + 1;
-    cy.scrollTo(0, y);
+Cypress.Commands.add("scrollrandom", () => {
+  const y = Math.floor(Math.random() * 10000) + 1;
+  cy.scrollTo(0, y);
 });
 
 Cypress.Commands.add("launchliking", () => {
-    cy.godiscover(5000);
-    cy.likeimg(5000);
-    cy.reload(true);
-  });
+  cy.godiscover();
+  cy.likeimg();
+  cy.reload(true);
+});
 
-  Cypress.Commands.add("connexion", () => {
+Cypress.Commands.add("connexion", () => {
   const env = Cypress.env();
-    cy.visit("https://instagram.com/" + env.INSTAGRAM_USERNAME);
-    cy.wait(2000);
-    cy.get("body").contains("Allow essential and optional cookies").click();
-    cy.wait(2000);
-    cy.get("body").contains("Log In").click();
-    cy.wait(2000);
-    cy.get('input[name="username"]')
-      .type(env.INSTAGRAM_USERNAME)
-      .should("have.value", env.INSTAGRAM_USERNAME);
-    cy.wait(2000);
-    cy.get('input[name="password"]')
-      .type(env.INSTAGRAM_MDP)
-      .should("have.value", env.INSTAGRAM_MDP);
-    cy.wait(2000);
-    cy.get('button[type="submit"]').click();
+  cy.visit("https://instagram.com/" + env.INSTAGRAM_USERNAME);
+  cy.waitrandom();
+  cy.get("body")
+    .contains("Allow essential and optional cookies")
+    .should("be.visible")
+    .click();
+  cy.waitrandom();
+  cy.get("body").contains("Log In").should("be.visible").click();
+  cy.waitrandom();
+  cy.get('input[name="username"]')
+    .should("be.visible")
+    .type(env.INSTAGRAM_USERNAME)
+    .should("have.value", env.INSTAGRAM_USERNAME);
+  cy.waitrandom();
+  cy.get('input[name="password"]')
+    .should("be.visible")
+    .type(env.INSTAGRAM_MDP)
+    .should("have.value", env.INSTAGRAM_MDP);
+  cy.waitrandom();
+  cy.get('button[type="submit"]').should("be.visible").click();
+  cy.wait(9000);
 });

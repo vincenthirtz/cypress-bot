@@ -5,14 +5,15 @@ context("First launch", () => {
 
   it("Profile OK", () => {
     const env = Cypress.env();
-    cy.wait(9000);
-    cy.get(`img[alt="Photo de profil de ${env.INSTAGRAM_USERNAME}"]`).click({
-      force: true,
-    });
-    cy.wait(5000);
+    cy.get(`img[alt="Photo de profil de ${env.INSTAGRAM_USERNAME}"]`)
+      .should("be.visible")
+      .click({
+        force: true,
+      });
+    cy.waitrandom();
     let n = 0;
 
-    while (n < 100) {
+    while (n < 10) {
       cy.launchliking();
       n++;
     }
