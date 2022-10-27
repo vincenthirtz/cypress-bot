@@ -3,3 +3,4 @@ cypress/screenshots
 node_modules
 cypress/videos
 package-lock.json
+cypress/.DS_Store
