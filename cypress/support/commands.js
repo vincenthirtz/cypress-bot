@@ -1,4 +1,4 @@
-Cypress.Commands.add("likeimg", () => {
+Cypress.Commands.add("selectImg", (key) => {
   cy.get("main")
     .find("img")
     .each(($img, k) => {
@@ -6,14 +6,14 @@ Cypress.Commands.add("likeimg", () => {
         cy.wrap($img)
           .click({ force: true })
           .then((n) => {
-            cy.elementExists();
+            cy.elementExists(key);
           });
       });
     })
     .should("have.length", 21);
 });
 
-Cypress.Commands.add("likea", () => {
+Cypress.Commands.add("selectA", (key) => {
   cy.get("article")
     .find("a")
     .each(($img, k) => {
@@ -21,28 +21,37 @@ Cypress.Commands.add("likea", () => {
         cy.wrap($img)
           .click({ force: true })
           .then((n) => {
-            cy.elementExists();
+            cy.elementExists(key);
           });
       });
     })
     .should("have.length", 21);
 });
 
-Cypress.Commands.add("elementExists", () => {
+Cypress.Commands.add("elementExists", (key) => {
   cy.waitrandom();
   cy.get("body").then(($body) => {
     cy.waitrandom();
-    if ($body.find('svg[aria-label="J’aime"]').length) {
-      cy.get(`svg[aria-label="J’aime"]`).first().click({
-        force: true,
-      });
-    } else {
-      cy.get(`svg[aria-label="Je n\’aime plus"]`)
-        .first()
-        .click({
+    if(key === "follow") {
+      if ($body.find("button").length) {
+        cy.get("button").contains("Suivre").first().click({
           force: true,
         });
+      } else {
+        return;
+      }
+    } else {
+      if ($body.find('svg[aria-label="J’aime"]').length) {
+        cy.get(`svg[aria-label="J’aime"]`).first().click({
+          force: true,
+        });
+      } else {
+        cy.get(`svg[aria-label="Je n\’aime plus"]`).first().click({
+          force: true,
+        });
+      }
     }
+   
   });
   cy.waitrandom();
 });
@@ -86,11 +95,23 @@ Cypress.Commands.add("scrollrandom", () => {
 Cypress.Commands.add("launchliking", (key) => {
   if (key === "choose") {
     cy.gosearch();
-    cy.likea();
+    cy.selectA();
     cy.reload(true);
   } else {
     cy.godiscover();
-    cy.likeimg();
+    cy.selectImg();
+    cy.reload(true);
+  }
+});
+
+Cypress.Commands.add("launchfollow", (key) => {
+  if (key === "choose") {
+    cy.gosearch();
+    cy.selectA("follow");
+    cy.reload(true);
+  } else {
+    cy.godiscover();
+    cy.selectImg("follow");
     cy.reload(true);
   }
 });
