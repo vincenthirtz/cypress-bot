@@ -1,62 +1,73 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-
-Cypress.Commands.add("likeimg", (waiting) => {
-  let shouldStop = false;
+Cypress.Commands.add("likeimg", () => {
   cy.get("main")
     .find("img")
     .each(($img, k) => {
       cy.then(() => {
-        if (shouldStop) {
-          return;
-        }
-        console.log("img", k);
         cy.wrap($img)
           .click({ force: true })
           .then((n) => {
-            cy.waitrandom();
-            if (n === 10) {
-              shouldStop = true;
-            }
-            cy.get(`svg[aria-label="J’aime"]`).click({
-              multiple: true,
-              force: true,
-            });
-            cy.waitrandom();
+            cy.elementExists();
           });
       });
     })
-    // cy.each yields the original subject
-    // even if you stop the iteration early
     .should("have.length", 21);
+});
+
+Cypress.Commands.add("likea", () => {
+  cy.get("article")
+    .find("a")
+    .each(($img, k) => {
+      cy.then(() => {
+        cy.wrap($img)
+          .click({ force: true })
+          .then((n) => {
+            cy.elementExists();
+          });
+      });
+    })
+    .should("have.length", 21);
+});
+
+Cypress.Commands.add("elementExists", () => {
+  cy.waitrandom();
+  cy.get("body").then(($body) => {
+    cy.waitrandom();
+    if ($body.find('svg[aria-label="J’aime"]').length) {
+      cy.get(`svg[aria-label="J’aime"]`).first().click({
+        force: true,
+      });
+    } else {
+      cy.get(`svg[aria-label="Je n\’aime plus"]`)
+        .first()
+        .click({
+          force: true,
+        });
+    }
+  });
+  cy.waitrandom();
 });
 
 Cypress.Commands.add("godiscover", () => {
   cy.waitrandom();
   cy.get(`svg[aria-label="Découvrir"]`).should("be.visible").click({
+    force: true,
+  });
+  cy.waitrandom();
+});
+
+Cypress.Commands.add("gosearch", () => {
+  const env = Cypress.env();
+  cy.waitrandom();
+  cy.get(`svg[aria-label="Recherche"]`).should("be.visible").click({
+    force: true,
+  });
+  cy.waitrandom();
+  cy.get('input[aria-label="Saisie de la recherche"]')
+    .should("be.visible")
+    .type(env.INSTAGRAM_SEARCH)
+    .should("have.value", env.INSTAGRAM_SEARCH);
+  cy.waitrandom();
+  cy.get('svg[aria-label="Hashtag"]').should("be.visible").first().click({
     force: true,
   });
   cy.waitrandom();
@@ -72,10 +83,16 @@ Cypress.Commands.add("scrollrandom", () => {
   cy.scrollTo(0, y);
 });
 
-Cypress.Commands.add("launchliking", () => {
-  cy.godiscover();
-  cy.likeimg();
-  cy.reload(true);
+Cypress.Commands.add("launchliking", (key) => {
+  if (key === "choose") {
+    cy.gosearch();
+    cy.likea();
+    cy.reload(true);
+  } else {
+    cy.godiscover();
+    cy.likeimg();
+    cy.reload(true);
+  }
 });
 
 Cypress.Commands.add("connexion", () => {

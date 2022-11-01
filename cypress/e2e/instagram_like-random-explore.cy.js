@@ -11,11 +11,6 @@ context("First launch", () => {
         force: true,
       });
     cy.waitrandom();
-    let n = 0;
-
-    while (n < 10) {
-      cy.launchliking();
-      n++;
-    }
+    cy.launchliking();
   });
 });
